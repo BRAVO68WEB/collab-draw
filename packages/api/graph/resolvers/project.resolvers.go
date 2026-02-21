@@ -20,7 +20,7 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 	project := &models.Project{
 		Name:     input.Name,
 		Elements: "",
-		Owner:    authContext.Subject,
+		Owner:    authContext.Sub,
 		Personal: input.Personal,
 	}
 	if input.Description != nil {
@@ -28,14 +28,14 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 	}
 
 	if input.Workspace != nil {
-		workspace, err := r.Repo.Workspace.GetWorkspaceByID(ctx, *input.Workspace, authContext.Subject)
+		workspace, err := r.Repo.Workspace.GetWorkspaceByID(ctx, *input.Workspace, authContext.Sub)
 		if err != nil {
 			return "", fmt.Errorf("failed to fetch workspace: %v", err)
 		}
 		if workspace == nil {
 			return "", fmt.Errorf("workspace not found")
 		}
-		if workspace.Owner != authContext.Subject {
+		if workspace.Owner != authContext.Sub {
 			return "", fmt.Errorf("only workspace owner can create project in it")
 		}
 		project.Workspace = &workspace.ID
@@ -54,7 +54,7 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 func (r *mutationResolver) UpdateProject(ctx context.Context, id string, elements string, socketID string) (bool, error) {
 	authContext := auth.ForContext(ctx)
 	fmt.Printf("Update Request from %s\n", socketID)
-	err := r.Repo.Project.UpdateProject(ctx, id, elements, authContext.Subject)
+	err := r.Repo.Project.UpdateProject(ctx, id, elements, authContext.Sub)
 	if err != nil {
 		return false, fmt.Errorf("failed to update project: %v", err)
 	}
@@ -70,7 +70,7 @@ func (r *mutationResolver) UpdateProject(ctx context.Context, id string, element
 // DeleteProject is the resolver for the deleteProject field.
 func (r *mutationResolver) DeleteProject(ctx context.Context, id string) (bool, error) {
 	authContext := auth.ForContext(ctx)
-	success, err := r.Repo.Project.DeleteProject(ctx, id, authContext.Subject)
+	success, err := r.Repo.Project.DeleteProject(ctx, id, authContext.Sub)
 	if err != nil {
 		return false, fmt.Errorf("failed to delete project: %v", err)
 	}
@@ -83,7 +83,7 @@ func (r *mutationResolver) UpdateProjectMetadata(ctx context.Context, id string,
 	if strings.TrimSpace(name) == "" {
 		return false, fmt.Errorf("project name cannot be empty")
 	}
-	err := r.Repo.Project.UpdateProjectMetadata(ctx, id, name, description, authContext.Subject)
+	err := r.Repo.Project.UpdateProjectMetadata(ctx, id, name, description, authContext.Sub)
 	if err != nil {
 		return false, fmt.Errorf("failed to update project metadata: %v", err)
 	}
@@ -120,7 +120,7 @@ func (r *queryResolver) Projects(ctx context.Context) ([]*model.Project, error) 
 // Project is the resolver for the project field.
 func (r *queryResolver) Project(ctx context.Context, id string) (*model.Project, error) {
 	authContext := auth.ForContext(ctx)
-	project, err := r.Repo.Project.GetProjectByID(ctx, id, authContext.Subject)
+	project, err := r.Repo.Project.GetProjectByID(ctx, id, authContext.Sub)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch project: %v", err)
 	}
@@ -147,7 +147,7 @@ func (r *queryResolver) Project(ctx context.Context, id string) (*model.Project,
 // ProjectsByUser is the resolver for the projectsByUser field.
 func (r *queryResolver) ProjectsByUser(ctx context.Context, userID string) ([]*model.Project, error) {
 	authContext := auth.ForContext(ctx)
-	projects, err := r.Repo.Project.GetProjectsByUserID(ctx, authContext.Subject)
+	projects, err := r.Repo.Project.GetProjectsByUserID(ctx, authContext.Sub)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch projects: %v", err)
 	}
@@ -175,7 +175,7 @@ func (r *queryResolver) ProjectsByUser(ctx context.Context, userID string) ([]*m
 // ProjectsPersonalByUser is the resolver for the projectsPersonalByUser field.
 func (r *queryResolver) ProjectsPersonalByUser(ctx context.Context, userID string) ([]*model.Project, error) {
 	authContext := auth.ForContext(ctx)
-	projects, err := r.Repo.Project.GetPersonalProjects(ctx, authContext.Subject)
+	projects, err := r.Repo.Project.GetPersonalProjects(ctx, authContext.Sub)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch projects: %v", err)
 	}
@@ -222,7 +222,7 @@ func (r *subscriptionResolver) Project(ctx context.Context, id string) (<-chan *
 	authContext := auth.ForContext(ctx)
 
 	// Verify user has access to this project
-	project, err := r.Repo.Project.GetProjectByID(ctx, id, authContext.Subject)
+	project, err := r.Repo.Project.GetProjectByID(ctx, id, authContext.Sub)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch project: %v", err)
 	}

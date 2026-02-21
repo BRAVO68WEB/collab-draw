@@ -134,7 +134,7 @@ export default function Project({ projectID, initialAppState }: ProjectProps) {
                 socketID: subscriptionData?.project.socketID,
               },
             })
-            .catch((error) => {
+            .catch((error: any) => {
               console.error("Failed to update project:", error);
             });
           lastSyncedElementsRef.current = elements;
