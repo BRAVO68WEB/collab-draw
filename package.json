@@ -1,0 +1,15 @@
+{
+  "name": "collab-draw",
+  "private": true,
+  "packageManager": "bun@1.3.9",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest",
+    "turbo": "^2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,40 @@
+type WorkspaceMember{
+    id: ID!
+    email: String!
+    imageURL: String!
+    fullName: String!
+}
+
+type WorkspaceMembersResponse {
+    members: [WorkspaceMember!]!
+    owner: WorkspaceMember!
+}
+type Workspace {
+    id: ID!
+    name: String!
+    description: String!
+    owner: ID!
+    members: WorkspaceMembersResponse
+    createdAt: String!
+}
+
+input NewWorkspace {
+    name: String!
+    description: String!
+    owner: ID!
+}
+
+extend type Query {
+    workspaces: [Workspace!]!
+    workspace(id: ID!): Workspace
+    workspacesByUser(userId: ID!): [Workspace!]!
+    sharedWorkspacesByUser(userId: ID!): [Workspace!]!
+}
+
+extend type Mutation {
+    createWorkspace(input: NewWorkspace!): String!
+    deleteWorkspace(id: ID!): Boolean!
+    addMemberToWorkspace(workspaceId: ID!, email: String!): Boolean!
+    removeMemberFromWorkspace(workspaceId: ID!, userId: ID!): Boolean!
+    updateWorkspaceMetadata(id: ID!, name: String!, description: String!): Boolean!
+}
