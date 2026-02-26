@@ -49,13 +49,43 @@
       ]
     }
   },
-  "scopeMappings": [],
-  "clientScopeMappings": {
-    "realm-management": [
-      {
-        "client": "collab-draw-api",
-        "roles": ["view-users", "query-users"]
+  "users": [
+    {
+      "username": "service-account-collab-draw-api",
+      "enabled": true,
+      "serviceAccountClientId": "collab-draw-api",
+      "clientRoles": {
+        "realm-management": ["manage-users", "manage-authorization", "manage-realm"]
       }
-    ]
-  }
+    },
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@collabdraw.dev",
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Smith",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "alice",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "email": "bob@collabdraw.dev",
+      "firstName": "Bob",
+      "lastName": "Johnson",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "bob",
+          "temporary": false
+        }
+      ]
+    }
+  ]
 }
